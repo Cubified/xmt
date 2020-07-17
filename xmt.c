@@ -13,6 +13,7 @@
 #include "include/fade.h"
 #include "include/bgd.h"
 #include "include/tree.h"
+#include "include/img.h"
 
 /*****************************/
 /* PREPROCESSOR              */
@@ -34,7 +35,8 @@ struct tool {
 struct tool tools[] = {
   {"fade", fade, fade_usage},
   {"bgd",  bgd,  bgd_usage },
-  {"tree", tree, tree_usage}
+  {"tree", tree, tree_usage},
+  {"img",  img,  img_usage}
 };
 
 /*****************************/

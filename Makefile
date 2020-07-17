@@ -3,7 +3,7 @@ all: xmt
 CC=gcc
 
 LIBS=-lX11
-CFLAGS=-Os -pipe -s
+CFLAGS=-Os -pipe -s -ansi -pedantic
 DEBUGCFLAGS=-Og -pipe -g
 
 INPUT=src/* xmt.c

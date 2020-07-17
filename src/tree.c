@@ -37,14 +37,21 @@ char *fetch_name(Display *dpy, Window win){
 }
 
 void prepend(int depth){
-  for(int i=0;i<depth;i++){
+  int i;
+  for(i=0;i<depth;i++){
     printf("  ");
   }
 }
 
 void print_children(Display *dpy, Window win, Window sel, int depth){
+  char *name;
+  int i;
+  struct tree *t;
+
+  t = query_tree(dpy, win);
+  name = fetch_name(dpy, win);
+  
   prepend(depth);
-  char *name = fetch_name(dpy, win);
   if(name == NULL){
     if(win == sel){
       printf(RED "%#x (You are here):\n", win);
@@ -57,9 +64,9 @@ void print_children(Display *dpy, Window win, Window sel, int depth){
     } else {
       printf(BLUE "%#x: %s\n", win, name);
     }
+    free(name);
   }
-  struct tree *t = query_tree(dpy, win);
-  for(int i=0;i<t->count;i++){
+  for(i=0;i<t->count;i++){
     print_children(dpy, t->children[i], sel, depth+1);
   }
   if(!t->count){
@@ -67,12 +74,14 @@ void print_children(Display *dpy, Window win, Window sel, int depth){
     printf(YELLOW "(none)\n");
   }
 
+  free(t->children);
   free(t);
 }
 void get_tree(Display *dpy, Window sel){
   Window root = DefaultRootWindow(dpy);
   printf(CYAN "Window tree from window %#x (root):\n", root);
   print_children(dpy, root, sel, 0);
+  printf(RESET);
 }
 
 Window find_window(Display *dpy){

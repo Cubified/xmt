@@ -9,6 +9,7 @@ Currently, `xmt` contains:
 - `fade`: Fade the root window's background between two colors
 - `bgd`: Set the root window's background color
 - `tree`: List the tree of all open windows
+- `img`: Set the display's wallpaper to an image
 
 ### Building and Running
 

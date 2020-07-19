@@ -1,16 +1,20 @@
-all: xmt
+all: lib xmt
 
 CC=gcc
 TCC=tcc
 
-LIBS=-lm -lX11
-CFLAGS=-Os -pipe -s
+LIBS=-lm -lpthread -lX11
+CFLAGS=-Os -pipe -s -Ilib -Ilib/wsServer/include
 DEBUGCFLAGS=-Og -pipe -g
 
-INPUT=src/* xmt.c
+INPUT=src/* xmt.c lib/wsServer/libws.a
 OUTPUT=xmt
 
 RM=/bin/rm
+
+.PHONY: lib
+lib:
+	$(MAKE) -s -C lib/wsServer
 
 .PHONY: xmt
 xmt:

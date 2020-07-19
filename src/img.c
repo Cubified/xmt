@@ -7,7 +7,7 @@
 #include "../include/img.h"
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "../include/stb_image.h"
+#include "../lib/stb_image.h"
 
 char *img_usage(){
   return "img  [path]               Set the display's wallpaper to an image.";
@@ -54,6 +54,7 @@ int img(Display *dpy, int argc, char **argv){
 
   for(y=0;y<h;y++){
     for(x=0;x<w;x++){
+      /* This may break for images with 1, 2, or 4 components */
       XPutPixel(
         ximg,
         x, y,
@@ -93,8 +94,8 @@ int img(Display *dpy, int argc, char **argv){
     DefaultRootWindow(dpy)
   );
 
-  free(ximg->data);
-  XFree(ximg);
+  stbi_image_free(data);
+  XDestroyImage(ximg);
 
   return 0;
 }

@@ -11,11 +11,11 @@ Currently, `xmt` contains:
 - `tree`: List the tree of all open windows
 - `img`: Set the display's wallpaper to an image
 - `float`: A minimal floating window manager
+- `web`: Start a web server which forwards the display to a browser (effectively a minimal [xpra](https://xpra.org/trac/wiki/Clients/HTML5))
 
 And plans exist to add:
 
 - `tile`: A minimal tiling window manager
-- `web`: Start a web server which forwards the display to a browser (effectively a minimal [xpra](https://xpra.org/trac/wiki/Clients/HTML5))
 
 ### Building and Running
 
@@ -35,3 +35,11 @@ While the standard target compiles in 2-3 seconds on my system, this compiles in
 ### Why should I use this over {feh, xsetroot, xpra, ...}?
 
 This project does not aim to be a replacement for any software which does the same things (and likely does them better), but rather a "swiss army knife" which centralizes a number of my once-disorganized X utilities into a single manageable, minimal, and fast binary.
+
+### Credits
+
+While `xmt` has no external dependencies other than Xlib, this repository does include and use:
+
+- [httpserver.h](https://github.com/jeremycw/httpserver.h)
+- [stb_image.h](https://github.com/nothings/stb)
+- [wsServer](https://github.com/Theldus/wsServer)

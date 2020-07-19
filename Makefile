@@ -1,9 +1,10 @@
 all: xmt
 
 CC=gcc
+TCC=tcc
 
-LIBS=-lX11
-CFLAGS=-Os -pipe -s -ansi -pedantic
+LIBS=-lm -lX11
+CFLAGS=-Os -pipe -s
 DEBUGCFLAGS=-Og -pipe -g
 
 INPUT=src/* xmt.c
@@ -14,6 +15,9 @@ RM=/bin/rm
 .PHONY: xmt
 xmt:
 	$(CC) $(INPUT) -o $(OUTPUT) $(LIBS) $(CFLAGS)
+
+fast:
+	$(TCC) $(INPUT) -o $(OUTPUT) $(LIBS) $(CFLAGS) -DSTBI_NO_SIMD
 
 debug:
 	$(CC) $(INPUT) -o $(OUTPUT) $(LIBS) $(DEBUGCFLAGS)

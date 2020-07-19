@@ -54,15 +54,15 @@ void print_children(Display *dpy, Window win, Window sel, int depth){
   prepend(depth);
   if(name == NULL){
     if(win == sel){
-      printf(RED "%#x (You are here):\n", win);
+      printf(RED "%#lx (You are here):\n", win);
     } else {
-      printf(GREEN "%#x:\n", win);
+      printf(GREEN "%#lx:\n", win);
     }
   } else {
     if(win == sel){
-      printf(RED "%#x (You are here): %s\n", win, name);
+      printf(RED "%#lx (You are here): %s\n", win, name);
     } else {
-      printf(BLUE "%#x: %s\n", win, name);
+      printf(BLUE "%#lx: %s\n", win, name);
     }
     free(name);
   }
@@ -79,7 +79,7 @@ void print_children(Display *dpy, Window win, Window sel, int depth){
 }
 void get_tree(Display *dpy, Window sel){
   Window root = DefaultRootWindow(dpy);
-  printf(CYAN "Window tree from window %#x (root):\n", root);
+  printf(CYAN "Window tree from window %#lx (root):\n", root);
   print_children(dpy, root, sel, 0);
   printf(RESET);
 }
@@ -117,7 +117,7 @@ int tree(Display *dpy, int argc, char **argv){
     if(strcmp(argv[1], "click") != 0){
       printf(CYAN "xmt tree: List the tree of all open windows.\n");
       printf(YELLOW "Optional arguments:\n");
-      printf(GREEN "  click: Use the mouse the select a visible window\n");
+      printf(GREEN "  click: Use the mouse the select a visible window\n" RESET);
       return -1;
     } else {
       should_grab = 1;

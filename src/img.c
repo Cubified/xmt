@@ -6,22 +6,32 @@
 
 #include "../include/img.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "../include/stb_image.h"
+
 char *img_usage(){
-  return "img  [path]:              Set the display's wallpaper to an image.";
+  return "img  [path]               Set the display's wallpaper to an image.";
 }
 
 int img(Display *dpy, int argc, char **argv){
   Pixmap pix;
-  XImage *img;
-  int x, y;
+  XImage *ximg;
+  unsigned char *data;
+  int x, y, w, h, n;
 
   if(argc < 2 ||
      strcmp(argv[1], "help") == 0){
     printf(CYAN "xmt img: Set the display's wallpaper to a given image.\n");
     printf(YELLOW "Required arguments:\n");
-    printf(GREEN "  - [path]: A path to an image file (can be in any common format)\n");
+    printf(GREEN "  - [path]: A path to an image file (can be in any common format)\n" RESET);
 
     return -1;
+  }
+
+  data = stbi_load(argv[1], &w, &h, &n, 0);
+  if(data == NULL){
+    printf(RED "Error: Unable to open file \"%s\" for reading.\n", argv[1]);
+    return 1;
   }
 
   pix = XCreatePixmap(
@@ -31,23 +41,26 @@ int img(Display *dpy, int argc, char **argv){
     XHeightOfScreen(DefaultScreenOfDisplay(dpy)),
     DefaultDepth(dpy, DefaultScreen(dpy))
   );
-  img = XCreateImage(
+  ximg = XCreateImage(
     dpy,
     DefaultVisual(dpy, DefaultScreen(dpy)),
     DisplayPlanes(dpy, DefaultScreen(dpy)),
     ZPixmap,
     0,
-    malloc(100*100*sizeof(int)),
-    100, 100,
+    malloc(w*h*sizeof(int)),
+    w, h,
     8, 0
   );
 
-  for(y=0;y<100;y++){
-    for(x=0;x<100;x++){
-      img->data[(y*4)*100+x*4+0] = (char)255;
-      img->data[(y*4)*100+x*4+1] = (char)255;
-      img->data[(y*4)*100+x*4+2] = 0;
-      img->data[(y*4)*100+x*4+3] = 0;
+  for(y=0;y<h;y++){
+    for(x=0;x<w;x++){
+      XPutPixel(
+        ximg,
+        x, y,
+        data[(y*w*n)+(x*n)] << 16  |
+        data[(y*w*n)+(x*n)+1] << 8 |
+        data[(y*w*n)+(x*n)+2]
+      );
     }
   }
 
@@ -63,11 +76,10 @@ int img(Display *dpy, int argc, char **argv){
     dpy,
     pix,
     DefaultGC(dpy, DefaultScreen(dpy)),
-    img,
+    ximg,
     0, 0,
     0, 0,
-    XWidthOfScreen(DefaultScreenOfDisplay(dpy)),
-    XHeightOfScreen(DefaultScreenOfDisplay(dpy))
+    w, h
   );
 
   XSetWindowBackgroundPixmap(
@@ -81,8 +93,8 @@ int img(Display *dpy, int argc, char **argv){
     DefaultRootWindow(dpy)
   );
 
-  XFree(img->data);
-  XFree(img);
+  free(ximg->data);
+  XFree(ximg);
 
   return 0;
 }

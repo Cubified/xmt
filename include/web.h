@@ -7,9 +7,13 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
+#include "../lib/miniz.h"
+
 #include "base64.h"
 #include "ws.h"
 #include "ansi.h"
+
+#define BLOCK_SIZE 40
 
 char *web_usage();
 int web(Display *dpy, int argc, char **argv);

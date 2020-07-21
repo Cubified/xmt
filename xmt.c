@@ -25,13 +25,13 @@
 /*****************************/
 /* TYPEDEFS AND STRUCTS      */
 /*****************************/
-typedef int (*func)();
+typedef int (*toolfunc)();
 typedef char *(*usage)();
 
 struct tool {
-  char *name;
-  func  exec;
-  usage help;
+  char     *name;
+  toolfunc exec;
+  usage    help;
 };
 
 struct tool tools[] = {

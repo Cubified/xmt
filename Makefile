@@ -5,9 +5,9 @@ TCC=tcc
 
 LIBS=-lm -lpthread -lX11
 CFLAGS=-Os -pipe -s -Ilib -Ilib/wsServer/include
-DEBUGCFLAGS=-Og -pipe -g
+DEBUGCFLAGS=-Og -pipe -g -Ilib -Ilib/wsServer/include
 
-INPUT=src/* xmt.c lib/wsServer/libws.a
+INPUT=src/* xmt.c lib/wsServer/libws.a lib/miniz.c
 OUTPUT=xmt
 
 RM=/bin/rm

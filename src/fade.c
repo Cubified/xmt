@@ -17,7 +17,9 @@ char *fade_usage(){
 int fade(Display *dpy, int argc, char **argv){
   Window root;
   color from, to, current;
-  int current_direction, direction, run_speed;
+  int current_direction, direction, run_speed = 100000;
+
+  srand(time(NULL));
 
   /*
    * TODO: Refactor? The fall-through solution is
@@ -54,8 +56,6 @@ int fade(Display *dpy, int argc, char **argv){
       color_rand(&to, 0x55);
       break;
   }
-
-  srand(time(NULL));
 
   current = from;
   root = DefaultRootWindow(dpy);

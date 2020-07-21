@@ -11,16 +11,13 @@ Currently, `xmt` contains:
 - `tree`: List the tree of all open windows
 - `img`: Set the display's wallpaper to an image
 - `float`: A minimal floating window manager
-- `web`: Start a web server which forwards the display to a browser (effectively a minimal [xpra](https://xpra.org/trac/wiki/Clients/HTML5))
-
-And plans exist to add:
-
-- `tile`: A minimal tiling window manager
+- `web`: (Work in progress) Start a web server which forwards the display to a browser (effectively a minimal [xpra](https://xpra.org/trac/wiki/Clients/HTML5))
 
 ### Building and Running
 
 `xmt` depends only upon Xlib, and can be compiled and run with:
 
+     $ git clone --recurse-submodules https://github.com/Cubified/xmt
      $ make
      $ ./xmt
 
@@ -32,6 +29,10 @@ If you would like to decrease compilation time, `tcc` can be used as a drop-in r
 
 While the standard target compiles in 2-3 seconds on my system, this compiles in less than a tenth of a second (at the expense of added size and a slower runtime speed).
 
+To test in a small X server (primarily for testing `xmt float`), run (requires Xephyr):
+
+     $ ./xephyr/run.sh
+
 ### Why should I use this over {feh, xsetroot, xpra, ...}?
 
 This project does not aim to be a replacement for any software which does the same things (and likely does them better), but rather a "swiss army knife" which centralizes a number of my once-disorganized X utilities into a single manageable, minimal, and fast binary.
@@ -40,6 +41,8 @@ This project does not aim to be a replacement for any software which does the sa
 
 While `xmt` has no external dependencies other than Xlib, this repository does include and use:
 
-- [httpserver.h](https://github.com/jeremycw/httpserver.h)
 - [stb_image.h](https://github.com/nothings/stb)
+- [httpserver.h](https://github.com/jeremycw/httpserver.h)
 - [wsServer](https://github.com/Theldus/wsServer)
+- [miniz](https://github.com/richgel999/miniz)
+- [pako](https://github.com/nodeca/pako)

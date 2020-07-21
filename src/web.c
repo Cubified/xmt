@@ -15,13 +15,13 @@ void ws_open(int fd){
   unsigned long compr_len;
   int x, y, w, h;
   char *buf = malloc(64),
-       compr[8192];
+       *compr = malloc(compressBound(40*40*4));
   XImage *ximg;
 
   w = XWidthOfScreen(DefaultScreenOfDisplay(dpy_global));
   h = XHeightOfScreen(DefaultScreenOfDisplay(dpy_global));
 
-  printf("New connection established.\n");
+  printf(GREEN "New connection established.\n");
 
   sprintf(
     buf,
@@ -41,22 +41,76 @@ void ws_open(int fd){
         AllPlanes,
         ZPixmap
       );
-      printf("%i\n", compress(compr, &compr_len, ximg->data, BLOCK_SIZE*BLOCK_SIZE*4));
+      /*printf("%i\n", compress(compr, &compr_len, ximg->data, (BLOCK_SIZE*BLOCK_SIZE*4)+(BLOCK_SIZE*4)+3));
       buf = base64_encode(compr, compr_len, NULL);
-      printf("%s\n", buf);
+      printf("%s\n", buf);*/
+      buf = base64_encode(ximg->data, BLOCK_SIZE*BLOCK_SIZE*4, NULL);
       ws_sendframe(fd, buf, false);
       XDestroyImage(ximg);
       free(buf);
     }
     ws_sendframe(fd, "newline", false);
   }
+  /*free(compr);*/
 }
 
 void ws_close(int fd){
 }
 
 void ws_msg(int fd, const unsigned char *msg){
-  /* Mouse events here, eventually */
+  int x, y;
+  XEvent evt;
+
+  sscanf(msg, "click%i,%i", &x, &y);
+
+  printf(YELLOW "Received click event at position " MAGENTA "(%i, %i)" YELLOW ".\n" RESET, x, y);
+
+  XWarpPointer(
+    dpy_global,
+    None,
+    DefaultRootWindow(dpy_global),
+    0, 0,
+    0, 0,
+    x, y
+  );
+  XFlush(dpy_global);
+
+  memset(&evt, 0, sizeof(evt));
+  evt.type = ButtonPress;
+  evt.xbutton.type = ButtonPress;
+  evt.xbutton.button = Button1;
+  evt.xbutton.same_screen = True;
+  evt.xbutton.subwindow = DefaultRootWindow(dpy_global);
+  while(evt.xbutton.subwindow){
+    evt.xbutton.window = evt.xbutton.subwindow;
+    XQueryPointer(dpy_global, evt.xbutton.window,
+                  &evt.xbutton.root, &evt.xbutton.subwindow,
+                  &evt.xbutton.x_root, &evt.xbutton.y_root,
+                  &evt.xbutton.x, &evt.xbutton.y,
+                  &evt.xbutton.state
+    );
+  }
+  XSendEvent(
+    dpy_global,
+    PointerWindow,
+    True,
+    ButtonPressMask,
+    &evt
+  );
+  XFlush(dpy_global);
+  usleep(10);
+
+  evt.type = ButtonRelease;
+  evt.xbutton.type = ButtonRelease;
+  XSendEvent(
+    dpy_global,
+    PointerWindow,
+    True,
+    ButtonPressMask,
+    &evt
+  );
+  XFlush(dpy_global);
+  usleep(10);
 }
 
 void handle_request(struct http_request_s *req){
@@ -90,6 +144,8 @@ int web(Display *dpy, int argc, char **argv){
   }
 
   dpy_global = dpy;
+
+  printf(CYAN "Starting WebSocket server on port " MAGENTA "9000" CYAN " and HTTP server on port " MAGENTA "%i" CYAN ".\n" RESET, port);
 
   if(fork() == 0){
     evs.onopen = &ws_open;

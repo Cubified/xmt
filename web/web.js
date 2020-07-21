@@ -21,14 +21,18 @@ window.addEventListener('DOMContentLoaded', ()=>{
       box_x = 0;
       box_y += 1;
     } else {
-      let bin = pako.inflate(atob(evt.data));
+//      let bin = pako.inflate(atob(evt.data));
+      let bin = atob(evt.data);
       let n = 0, i = 0;
       for(let y=0;y<img.height;y++){
         for(let x=0;x<img.width;x++){
           i = y * (img.width * 4) + x * 4;
-          img.data[i+0] = bin[i+2]||bin[2];
+/*          img.data[i+0] = bin[i+2]||bin[2];
           img.data[i+1] = bin[i+1]||bin[1];
-          img.data[i+2] = bin[i+0]||bin[0];
+          img.data[i+2] = bin[i+0]||bin[0];*/
+          img.data[i+0] = bin.charCodeAt(i+2);
+          img.data[i+1] = bin.charCodeAt(i+1);
+          img.data[i+2] = bin.charCodeAt(i+0);
           img.data[i+3] = 255;
         }
       }
@@ -36,4 +40,8 @@ window.addEventListener('DOMContentLoaded', ()=>{
       box_x += 1;
     }
   };
+
+  canv.addEventListener('click', (e)=>{
+    ws.send(`click${e.pageX},${e.pageY}`);
+  });
 });

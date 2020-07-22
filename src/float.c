@@ -267,10 +267,12 @@ char *floatwm_usage(){
 int floatwm(Display *dpy, int argc, char **argv){
   int i, throwaway;
   int running = 1;
-  int start_x = -1;
-  int start_y = -1;
-  int start_w = -1;
-  int start_h = -1;
+  int start_x = -1,
+      start_y = -1;
+  int start_w = -1,
+      start_h = -1;
+  int map_w = -1,
+      map_h = -1;
   int action = -1;
   XWindowChanges wc;
   XEvent evt;
@@ -300,6 +302,35 @@ int floatwm(Display *dpy, int argc, char **argv){
     switch(evt.type){
       case MapRequest:
         focused = evt.xmaprequest.window;
+
+        XQueryPointer(
+          dpy,
+          focused,
+          (Window*)&throwaway,
+          (Window*)&throwaway,
+          &wc.x, &wc.y,
+          &throwaway,
+          &throwaway,
+          &throwaway
+        );
+        XGetGeometry(
+          dpy,
+          focused,
+          (Window*)&throwaway,
+          &throwaway, &throwaway,
+          &map_w, &map_h,
+          &throwaway,
+          &throwaway
+        );
+        wc.x -= (map_w / 2);
+        wc.y -= (map_h / 2);
+        XConfigureWindow(
+          dpy,
+          focused,
+          CWX|CWY,
+          &wc
+        );
+
         XMapWindow(dpy, focused);
         XSetInputFocus(
           dpy,
@@ -327,14 +358,6 @@ int floatwm(Display *dpy, int argc, char **argv){
         );
         break;
       case EnterNotify:
-        if(focused != root &&
-           focused != 0 &&
-           focused != evt.xcrossing.window){
-          XLowerWindow(
-            dpy,
-            focused
-          );
-        }
         focused = evt.xcrossing.window;
         XSetInputFocus(
           dpy,

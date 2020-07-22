@@ -32,15 +32,16 @@ struct tool {
   char     *name;
   toolfunc exec;
   usage    help;
+  int      need_threads;
 };
 
 struct tool tools[] = {
-  {"fade",  fade,    fade_usage},
-  {"bgd",   bgd,     bgd_usage },
-  {"tree",  tree,    tree_usage},
-  {"img",   img,     img_usage},
-  {"float", floatwm, floatwm_usage},
-  {"web",   web,     web_usage}
+  {"fade",  fade,    fade_usage,    0},
+  {"bgd",   bgd,     bgd_usage,     0},
+  {"tree",  tree,    tree_usage,    0},
+  {"img",   img,     img_usage,     0},
+  {"float", floatwm, floatwm_usage, 0},
+  {"web",   web,     web_usage,     1}
 };
 
 /*****************************/
@@ -72,6 +73,10 @@ int main(int argc, char **argv){
     }
     printf(YELLOW "All commands accept " CYAN "\"help\"" YELLOW " as their first argument for additional information.\n" RESET);
     return 0;
+  }
+
+  if(cmd->need_threads){
+    XInitThreads();
   }
 
   dpy = XOpenDisplay(NULL);

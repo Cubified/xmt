@@ -15,7 +15,14 @@ Currently, `xmt` contains:
 
 ### Building and Running
 
-`xmt` depends only upon Xlib, and can be compiled and run with:
+`xmt` depends upon Xlib, two of its extensions, and `xdotool`, which will most likely be packaged under the names:
+
+- libX11(-devel)
+- libXdamage(-devel)
+- libXfixes(-devel)
+- xdotool
+
+`xmt` can be compiled and run with:
 
      $ git clone --recurse-submodules https://github.com/Cubified/xmt
      $ make
@@ -32,6 +39,10 @@ While the standard target compiles in 2-3 seconds on my system, this compiles in
 To test in a small X server (primarily for testing `xmt float`), run (requires Xephyr):
 
      $ ./xephyr/run.sh
+
+To install to `~/.local/bin`:
+
+     $ make install
 
 ### Why should I use this over {feh, xsetroot, xpra, ...}?
 

@@ -1,4 +1,4 @@
-all: lib xmt
+all: lib web xmt
 
 CC=gcc
 TCC=tcc
@@ -10,6 +10,9 @@ DEBUGCFLAGS=-Og -pipe -g -Ilib -Ilib/wsServer/include
 INPUT=src/* xmt.c lib/wsServer/libws.a lib/miniz.c
 OUTPUT=xmt
 
+HTMLIN=web/web.html
+HTMLOUT=include/web.html.h
+
 RM=/bin/rm
 
 INSTALLDIR=$(HOME)/.local/bin
@@ -18,11 +21,15 @@ INSTALLDIR=$(HOME)/.local/bin
 lib:
 	$(MAKE) -s -C lib/wsServer
 
+web:
+	xxd -i $(HTMLIN) > $(HTMLOUT)
+
 .PHONY: xmt
 xmt:
 	$(CC) $(INPUT) -o $(OUTPUT) $(LIBS) $(CFLAGS)
 
 fast:
+	xxd -i $(HTMLIN) > $(HTMLOUT)
 	$(TCC) $(INPUT) -o $(OUTPUT) $(LIBS) $(CFLAGS) -DSTBI_NO_SIMD
 
 debug:

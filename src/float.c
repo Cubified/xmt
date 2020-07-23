@@ -1,5 +1,5 @@
 /*
- * float.c: A minimal flowing window manager
+ * float.c: Start a minimal flowing window manager
  *
  * Not as extensible or featureful as it could be,
  * but highly functional, minimal, and in line
@@ -261,26 +261,27 @@ void x_set_env(Display *dpy, Window root){
 }
 
 char *floatwm_usage(){
-  return "float                     A minimal floating window manager.";
+  return "float                     Start a minimal floating window manager.";
 }
 
 int floatwm(Display *dpy, int argc, char **argv){
-  int i, throwaway;
-  int running = 1;
-  int start_x = -1,
+  int i,
+      running =  1,
+      action  = -1,
+      start_x = -1,
       start_y = -1;
-  int start_w = -1,
-      start_h = -1;
-  int map_w = -1,
-      map_h = -1;
-  int action = -1;
+  unsigned int start_w = -1,
+               start_h = -1,
+               map_w = -1,
+               map_h = -1,
+               throwaway;
   XWindowChanges wc;
   XEvent evt;
   Window root;
   Window focused = 0;
 
   if(argc > 1){
-    printf(CYAN "xmt float: A minimal floating window manager.\n");
+    printf(CYAN "xmt float: Start a minimal floating window manager.\n");
     printf(YELLOW "Keybinds:\n");
     printf(GREEN "  - Alt+Enter:              Start a terminal emulator (can be changed using the " MAGENTA "$TERMINAL" GREEN " environment variable)\n");
     printf(BLUE  "  - Alt+Shift+Q:            Close the currently focused window\n");
@@ -309,15 +310,15 @@ int floatwm(Display *dpy, int argc, char **argv){
           (Window*)&throwaway,
           (Window*)&throwaway,
           &wc.x, &wc.y,
-          &throwaway,
-          &throwaway,
+          (int*)&throwaway,
+          (int*)&throwaway,
           &throwaway
         );
         XGetGeometry(
           dpy,
           focused,
           (Window*)&throwaway,
-          &throwaway, &throwaway,
+          (int*)&throwaway, (int*)&throwaway,
           &map_w, &map_h,
           &throwaway,
           &throwaway
@@ -434,7 +435,7 @@ int floatwm(Display *dpy, int argc, char **argv){
               dpy,
               focused,
               (Window*)&throwaway,
-              &throwaway, &throwaway,
+              (int*)&throwaway, (int*)&throwaway,
               &start_w, &start_h,
               &throwaway,
               &throwaway

@@ -5,14 +5,13 @@
  */
 
 #include "../include/web.h"
+#include "../include/web.html.h"
 
 #define HTTPSERVER_IMPL
 #include "httpserver.h"
 
 Display *dpy_global;
 Damage   root_dmg;
-char html_global[4096];
-int  html_global_size;
 int  dmg_evt, dmg_err;
 
 void x_click(int button, int state, int x, int y){
@@ -82,7 +81,7 @@ void x_click(int button, int state, int x, int y){
 
 void x_key(int code, int state){
   char buf[256];
-  printf(YELLOW "Received " MAGENTA "%c" YELLOW " key%s event.\n" RESET, code, (state ? "down" : "up"));
+  printf(YELLOW "Received " MAGENTA "%c" YELLOW " key%s event.\n" RESET, code+32, (state ? "down" : "up"));
   sprintf(buf, "xdotool %s %c", (state ? "keydown" : "keyup"), code+32);
   system(buf);
 }
@@ -90,13 +89,13 @@ void x_key(int code, int state){
 void x_send(int fd, int x, int y, int w, int h){
   unsigned long compr_len;
   int x_i, y_i;
-  char *buf,
-       set[128];/*,
-       *compr = malloc(compressBound(BLOCK_SIZE*BLOCK_SIZE*4));*/
+  unsigned char *buf,
+                 set[128];/*,
+                *compr = malloc(compressBound(BLOCK_SIZE*BLOCK_SIZE*4));*/
   XImage *ximg;
 
-  sprintf(set, "set%i,%i", x%BLOCK_SIZE, y%BLOCK_SIZE);
-  ws_sendframe(fd, set, false);
+  sprintf((char*)set, "set%i,%i", x%BLOCK_SIZE, y%BLOCK_SIZE);
+  ws_sendframe(fd, (char*)set, false);
 
   XLockDisplay(dpy_global);
   for(y_i=y%BLOCK_SIZE;y_i<h/BLOCK_SIZE;y_i++){
@@ -112,8 +111,8 @@ void x_send(int fd, int x, int y, int w, int h){
       /*printf("%i\n", compress(compr, &compr_len, ximg->data, (BLOCK_SIZE*BLOCK_SIZE*4)+(BLOCK_SIZE*4)+3));
       buf = base64_encode(compr, compr_len, NULL);
       printf("%s\n", buf);*/
-      buf = base64_encode(ximg->data, BLOCK_SIZE*BLOCK_SIZE*4, NULL);
-      ws_sendframe(fd, buf, false);
+      buf = base64_encode((const unsigned char*)ximg->data, BLOCK_SIZE*BLOCK_SIZE*4, NULL);
+      ws_sendframe(fd, (const char*)buf, false);
       XDestroyImage(ximg);
       free(buf);
     }
@@ -178,7 +177,7 @@ void ws_close(int fd){
 void ws_msg(int fd, const unsigned char *msg){
   int type, state, x, y;
 
-  sscanf(msg, "%i,%i,%i,%i", &type, &state, &x, &y);
+  sscanf((const char*)msg, "%i,%i,%i,%i", &type, &state, &x, &y);
 
   switch(type){
     case Button1:
@@ -197,7 +196,7 @@ void handle_request(struct http_request_s *req){
   struct http_response_s *res = http_response_init();
   http_response_status(res, 200);
   http_response_header(res, "Content-Type", "text/html");
-  http_response_body(res, html_global, html_global_size);
+  http_response_body(res, (const char*)web_web_html, (int)web_web_html_len);
   http_respond(req, res);
 }
 
@@ -207,7 +206,6 @@ char *web_usage(){
 
 int web(Display *dpy, int argc, char **argv){
   int x, y, port = 8080;
-  FILE *fp;
   struct ws_events evs;
   struct http_server_s *server;
 
@@ -235,16 +233,6 @@ int web(Display *dpy, int argc, char **argv){
   }
 
   dpy_global = dpy;
-  fp = fopen("web/web.html", "r");
-  if(fp == NULL){
-    printf(RED "Failed to open " MAGENTA "web/web.html" RED " for reading.\n" RESET);
-    return 1;
-  }
-  fseek(fp, 0, SEEK_END);
-  html_global_size = ftell(fp);
-  fseek(fp, 0, SEEK_SET);
-  fread(html_global, html_global_size, 1, fp);
-  fclose(fp);
 
   printf(CYAN "Starting WebSocket server on port " MAGENTA "9000" CYAN " and HTTP server on port " MAGENTA "%i" CYAN ".\n" RESET, port);
 

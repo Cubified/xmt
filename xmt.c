@@ -16,6 +16,7 @@
 #include "include/img.h"
 #include "include/float.h"
 #include "include/web.h"
+#include "include/term.h"
 
 /*****************************/
 /* PREPROCESSOR              */
@@ -41,7 +42,8 @@ struct tool tools[] = {
   {"tree",  tree,    tree_usage,    0},
   {"img",   img,     img_usage,     0},
   {"float", floatwm, floatwm_usage, 0},
-  {"web",   web,     web_usage,     1}
+  {"web",   web,     web_usage,     1},
+  {"term",  term,    term_usage,    0}
 };
 
 /*****************************/

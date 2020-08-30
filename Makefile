@@ -1,4 +1,4 @@
-all: lib web xmt
+all: lib html xmt
 
 CC=gcc
 TCC=tcc
@@ -21,7 +21,7 @@ INSTALLDIR=$(HOME)/.local/bin
 lib:
 	$(MAKE) -s -C lib/wsServer
 
-web:
+html:
 	xxd -i $(HTMLIN) > $(HTMLOUT)
 
 .PHONY: xmt

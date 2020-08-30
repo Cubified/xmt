@@ -12,6 +12,7 @@ Currently, `xmt` contains:
 - `img`: Set the display's wallpaper to an image
 - `float`: Start a minimal floating window manager
 - `web`: (Work in progress) Start a web server which forwards the display to a browser (effectively a minimal [xpra](https://xpra.org/trac/wiki/Clients/HTML5))
+- `term`: Forward the contents of the display to a terminal (standalone project available at [https://github.com/Cubified/xtermview](https://github.com/Cubified/xtermview))
 
 ### Building and Running
 
